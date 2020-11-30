@@ -1,4 +1,25 @@
-let state;
+// Every piece of code that would be common to any JavaScript application following this pattern is wrapped inside of the createStore function.
+
+// createStore's dispatch method works by having an action dispatched, which calls a reducer, and then renders the view.
+function createStore(reducer) {
+  let state;
+
+  function dispatch(action) {
+    state = reducer(state, action);
+    render();
+  }
+
+  function getState() {
+    return state;
+  }
+
+  return {
+    dispatch,
+    getState
+  };
+};
+
+// Any code that is particular to our application is outside that function.
 
 function reducer(state = { count: 0 }, action) {
   switch (action.type) {
@@ -10,19 +31,17 @@ function reducer(state = { count: 0 }, action) {
   }
 };
 
-function dispatch(action){
-  state = reducer(state, action);
-  render();
-};
-
 function render() {
   let container = document.getElementById('container');
-  container.textContent = state.count;
+  container.textContent = store.getState().count;
 };
 
-dispatch({ type: '@@INIT' })
+
+ // createStore takes the reducer as an argument
+let store = createStore(reducer);
+store.dispatch({ type: '@@INIT' });
 let button = document.getElementById('button');
 
-button.addEventListener('click', function() {
-    dispatch({ type: 'INCREASE_COUNT' });
+button.addEventListener('click', () => {
+    store.dispatch({ type: 'INCREASE_COUNT' });
 })
